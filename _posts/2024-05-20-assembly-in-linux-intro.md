@@ -32,13 +32,13 @@ To define our variable under this section, we're going to first give our variabl
 Almost done defining now! Now, we need to get the length of our userInput variable, so we start by defining a variable named userInputLen, however, instead of defining it with `db` this time we need to use `equ`. This is because `db` defines space in memory for data before the program even runs. However, we can't get the length of userInput until the program has ran since there's nothing in the memory address. Essentially, `equ` waits for "Please enter a string: " to be assigned to userInput before it checks the length. We then use $ to get the 'current location counter', essentially this is where the variable userInput starts in memory. We then minus that by where it ends in memory to get the full length. It's like having a sentence and finding the length of a word in it by finding out it starts at the 20th character and ends at the 30th character, so doing 30-20 to find out it's 10 characters long.
 
 Congrats! You defined a variable in assembly! Here's the code you should have, don't worry about what happens after the semi colons (;) also, they're comments that the program ignores and they're there for you to get a better understanding into what happens line by line:
-```arm
+```
 section .data                                        ; Constants
     userInput: db "Please enter a string: ", 0       ; Reserve 128 bytes for a variable named 'buffer'
     userInputLen: equ $-userInput                    ; Get the length of askForInp
 ```
 Now, time to get a little bit techy. We need to do a little bit of code to help our linker *(This is what compiles our code & makes it run)* know where to start in the code. So, we're going to define another section called .text, this is a special indicator of where the entry point for our program is. Our entry point is going to be called _start, so we'll write global _start under it. (Global to define _start can be referenced globally.) Here's the final code for that.
-```arm
+```
 section .text            ; give an entry point for our linker
     global _start
 ```
@@ -58,7 +58,7 @@ We're then going to reference the standard output file descriptor, which is stor
 
 So, let's get to it! we're going to write the userInput variable's content to the ``%rsi`` register by using the `mov` instruction again. Leading to `mov rsi, userInput`. Finally, we need to give the length which we defined earlier on with `mov rdx, userInputLen`. Finally, we need to call the kernel to pickup the instructions we've given and execute them, which can easily be done by using the instruction `syscall`. **We need to make sure all of these instructions are done under _start, as they will not run otherwise.**
 
-```arm
+```
 _start:
     mov rax, 1                ; sys_write
     mov rdi, 1                ; File descriptor 1 (stdout)
@@ -71,7 +71,7 @@ And there we have it..! We've written code to output something to our terminal. 
 
 ### Taking a user input
 Now, if you've ever taken a user input in another program before you'll know we need to make a variable for the user input to be written in. So, we need to make a new section like we did for our constant earlier. We're going to do this by making another section! **((Make sure the section is written outside of main next to where we wrote our constants. If you don't understand this, check the bottom of the article for the final code.))** For this section we're going to call it `.bss`, which in "ye' olde tech jargen" stands for Block Started by Symbol. In English and not nerd speak, what this means is a variable that isn't defined on boot of the program. Under our new `section .bss` we're going to give a name for where our user is going to input the variable. I'm going to call it `buffer` but once again you can call it whatever you like. Then, we're going to use an instruction called  `resb`  and pass the integer `128` after it. This simply tells the program to save a 128 byte space in memory under the variable called `buffer`. It's a bit like saving a seat for your friend in a cinema, excpet the cinema is your RAM, and everyone there is data! Once we've done this we should end up with this code.
-```arm
+```
 section .bss            	; Variables
     buffer resb 128       	; Reserve 128 bytes under the variable 'buffer'
 ```
@@ -86,7 +86,7 @@ syscall                   	; Call kernel
 Boom! We've stored our user input in memory! Now just to output it back to the user and exit the program peacefully!
 ### Outputting the user's input
 This is almost **exactly** the same as printing our variable earlier, except this time we're doing it with our buffer variable. I'll spare you the explanation as by now I'm sure you understand how printing works. If you don't however. Don't get disheartened..! If you're feeling a little overwhelmed it's okay to come back later or ask for help in [my lovely Discord community](https://discord.com/invite/jzMxbK3pv4) <3. Now, here's the code you'll have to output the user input.
-```arm
+```
 mov rax, 1                ; sys_write
 mov rdi, 1                ; File descriptor 1 (stdout)
 mov rsi, buffer           ; Pointer to where the user input was allocated
@@ -99,7 +99,7 @@ If you've ever coded in C, you'll know all about error codes. However if you don
 |%rax|System Call|%rdi|
 |--|--|--|--|--|
 | 60|sys_exit  |int error_code  |
-```arm
+```
 mov rax, 60                ; sys_exit
 mov rdi, 0                 ; Exit code (0 = Successfull)
 syscall                    ; Call Kernel
@@ -141,7 +141,7 @@ My Blahaj is so cute!
 And there it is, you've written your first piece of assembly code. If you're still having issues, consult the debugging section, or check your code with my final code ((If both of our codes are the same, you have an issue with how you're compiling your code)). Before you go, if you want to learn more and maybe look into how you could improve this code or learn more, read along into the notes section.
 
 ### Final Code
-```arm
+```
 section .bss				; Variables
     buffer resb 128        	; Reserve 128 bytes under the variable 'buffer'
 
@@ -156,9 +156,7 @@ _start:
     ; sys_write
     mov rax, 1                ; sys_write
     mov rdi, 1                ; File descriptor 1 (stdout)
-    mov rsi, userInput        ; Pointer to variable on what to arm
-
-output
+    mov rsi, userInput        ; Pointer to variable on what to output
     mov rdx, userInputLen    	; Length of what's to be outputted.
     syscall                  	; Call kernel
 
