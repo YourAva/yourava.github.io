@@ -43,10 +43,7 @@ section .text            ; give an entry point for our linker
     global _start
 ```
 Now, it's time to get into the **fun** part! We're going to be programming our main code now. As stated earlier, we firstly want to output something. So, we need to call up on the [Kernel](https://en.wikipedia.org/wiki/Kernel) with the sys_write function that will allow us to write to the console. To do this we need to write to a few different registers to meet some requirements before we print. When trying to do this, documentation such as this [Linux system call table](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/) can be extremely helpful. Under this webpage, we can find this graph for sys_write and sys_read. (We will use sys_read later.)
-|%rax|System Call|%rdi|%rsi|%rdx|
-|--|--|--|--|--|
-| 0|sys_read  |unsigned int fd  |char *buf  |size_t count  |
-| 1|sys_write  |unsigned int fd  |const char *buf  |size_t count  |
+<img src="https://i.imgur.com/sGyQeHD.png">
 So, in this graph we can see multiple of these 3 character words starting with a %. These are registers. If you're unsure on what a register is. I highly recommend you [read up about them](https://www.totalphase.com/blog/2023/05/what-is-register-in-cpu-how-does-it-work/), or do your own research. Now, we can see under these registers what we have to input into them to reference the syscalls to be executed, so let's get to programming.
 
 Firstly, we need to use the `mov` instruction to send a piece of data to a specified register. We're first going to want to send the integer 1 to the register `rax`, so we're going to write `mov rax, 1`. This is done to  reference the sys_write instruction so the kernel knows what all the other inputs into the other registers are for. It's a bit like calling a function's name in a high level language!
@@ -96,9 +93,7 @@ syscall                   ; Call kernel
 
 ### Exiting the program peacefully
 If you've ever coded in C, you'll know all about error codes. However if you don't, here's a quick rundown. When a program finishes we normally return a number which can be interpreted as different things. For example, 0 is interpreted as the program finishing successfully, however, -1 can be  interpreted as an error on the program. Obviously, if the program has made it to this point it's ran successfully. So, we're going to go ahead and return `0` using the `sys_exit` function. If you think you can, go ahead and try to do this yourself. If not, feel free to follow along.
-|%rax|System Call|%rdi|
-|--|--|--|--|--|
-| 60|sys_exit  |int error_code  |
+<img src="https://i.imgur.com/XMFkA4Z.png">
 ```
 mov rax, 60                ; sys_exit
 mov rdi, 0                 ; Exit code (0 = Successfull)
