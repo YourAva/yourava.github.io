@@ -1,3 +1,4 @@
+
 ## $ ./AssemblyInLinuxIntro
 *By [AvaLikesBread](https://github.com/YourAva)*
 *Average read time is roughly 12m20s*
@@ -8,6 +9,8 @@ Heya, and welcome to BitCrunch. Today we're going to be going over how to progra
 > I have only recently started learning assembly. If I make any mistakes please feel free to join my [Discord](https://discord.com/invite/jzMxbK3pv4) and DM me what I've explained in a convoluted way, or incorrectly and I will try my best to correct it.
 
 Now, first we should get a good understanding of **what assembly actually is**. Assembly is a low level language that allows us to get extremely close to actual machine code, without actually flipping the bits ourself. This offers extreme control over our machines and means we can run some processes that take extreme accuracy. In addition to this, it also allows a way for malicious code to be ran on computers where it will be less detectable.
+
+<img src="https://i.imgur.com/ChSvTBT.png" width=500px>
 
 ### Starting to program
 
@@ -34,9 +37,9 @@ section .data                                        ; Constants
     userInput: db "Please enter a string: ", 0       ; Reserve 128 bytes for a variable named 'buffer'
     userInputLen: equ $-userInput                    ; Get the length of askForInp
 ```
-Now, time to get a little bit techy. We need to do a little bit of code to help our linker (We'll be using the package GCC) know where to start in the code. So, we're going to define another section called .text, this is a special indicator of where the entry point for our program is. Our entry point is going to be called _start, so we'll write global _start under it. (Global to define _start can be referenced globally.) Here's the final code for that.
+Now, time to get a little bit techy. We need to do a little bit of code to help our linker *(This is what compiles our code & makes it run)* know where to start in the code. So, we're going to define another section called .text, this is a special indicator of where the entry point for our program is. Our entry point is going to be called _start, so we'll write global _start under it. (Global to define _start can be referenced globally.) Here's the final code for that.
 ```arm
-section .text            ; give an entry point for our linker (GCC)
+section .text            ; give an entry point for our linker
     global _start
 ```
 Now, it's time to get into the **fun** part! We're going to be programming our main code now. As stated earlier, we firstly want to output something. So, we need to call up on the [Kernel](https://en.wikipedia.org/wiki/Kernel) with the sys_write function that will allow us to write to the console. To do this we need to write to a few different registers to meet some requirements before we print. When trying to do this, documentation such as this [Linux system call table](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/) can be extremely helpful. Under this webpage, we can find this graph for sys_write and sys_read. (We will use sys_read later.)
@@ -48,12 +51,12 @@ So, in this graph we can see multiple of these 3 character words starting with a
 
 Firstly, we need to use the `mov` instruction to send a piece of data to a specified register. We're first going to want to send the integer 1 to the register `rax`, so we're going to write `mov rax, 1`. This is done to  reference the sys_write instruction so the kernel knows what all the other inputs into the other registers are for. It's a bit like calling a function's name in a high level language!
 
-We're then going to reference the standard output file descriptor, which is stored in 1, and send that to the rdiregister. After this we can see in the graph it wasnt a `const char *buf` and `size_t count`. All this means is it wants...
+We're then going to reference the standard output file descriptor, which is stored in 1, and send that to the register. After this we can see in the graph it wants a `const char *buf` and `size_t count`. All this means is it wants...
 
  1. What we're going to output
  2. The length of the variable we're outputting.
- 
- So, let's get to it! we're going to write the userInput variable's content to the ``%rsi`` register by using the `mov` instruction again. Leading to `mov rsi, userInput`. Finally, we need to give the length which we defined earlier on with `mov rdx, userInputLen`. Finally, we need to call the kernel to pickup the instructions we've given and execute them, which can easily be done by using the instruction `syscall`. **We need to make sure all of these instructions are done under _start, as they will not run otherwise.**
+
+So, let's get to it! we're going to write the userInput variable's content to the ``%rsi`` register by using the `mov` instruction again. Leading to `mov rsi, userInput`. Finally, we need to give the length which we defined earlier on with `mov rdx, userInputLen`. Finally, we need to call the kernel to pickup the instructions we've given and execute them, which can easily be done by using the instruction `syscall`. **We need to make sure all of these instructions are done under _start, as they will not run otherwise.**
 
 ```arm
 _start:
@@ -63,11 +66,11 @@ _start:
     mov rdx, userInputLen     ; Length of what's to be outputted.
     syscall                   ; Call kernel
 ```
-
 And there we have it..! We've written code to output something to our terminal. However, we're not done just yet.
+<img src="https://i.imgur.com/C36wrav.png" width=500px>
 
 ### Taking a user input
-Now, if you've ever taken a user input in another program before you'll know we need to make a variable for the user input to be written in. So, we need to make a new section like we did for our constant earlier. We're going to do this by making another section! **((Make sure the section is written outside of main next to where we wrote our constants. If you don't understand this, check the bottom of the article for the final code.))** For this section we're going to call it `.bss`, which in "ye' olde tech jargen" stands for Block Started by Symbol. In simple, what this means is a variable that isn't defined on boot of the program. Under our new `section .bss` we're going to give a name for where our user is going to input the variable. I'm going to call it `buffer` but once again you can call it whatever you like. Then, we're going to use an instruction called  `resb`  and pass the integer `128` after it. This simply tells the program to save a 128 byte space in memory under the variable called `buffer`. It's a bit like saving a seat for your friend in a cinema, excpet the cinema is your RAM, and everyone there is data! Once we've done this we should end up with this code.
+Now, if you've ever taken a user input in another program before you'll know we need to make a variable for the user input to be written in. So, we need to make a new section like we did for our constant earlier. We're going to do this by making another section! **((Make sure the section is written outside of main next to where we wrote our constants. If you don't understand this, check the bottom of the article for the final code.))** For this section we're going to call it `.bss`, which in "ye' olde tech jargen" stands for Block Started by Symbol. In English and not nerd speak, what this means is a variable that isn't defined on boot of the program. Under our new `section .bss` we're going to give a name for where our user is going to input the variable. I'm going to call it `buffer` but once again you can call it whatever you like. Then, we're going to use an instruction called  `resb`  and pass the integer `128` after it. This simply tells the program to save a 128 byte space in memory under the variable called `buffer`. It's a bit like saving a seat for your friend in a cinema, excpet the cinema is your RAM, and everyone there is data! Once we've done this we should end up with this code.
 ```arm
 section .bss            	; Variables
     buffer resb 128       	; Reserve 128 bytes under the variable 'buffer'
@@ -135,7 +138,7 @@ Now, if we run `ls` in our terminal we're going to see a few files have outputte
 Please enter a string: My Blahaj is so cute!
 My Blahaj is so cute!
 ```
-And there it is, you've written your first piece of assembly code. If you're still having issues, consult the debugging section, or check your code with my final code. Before you go, if you want to learn more and maybe look into how you could improve this code or learn more, read along into the notes section.
+And there it is, you've written your first piece of assembly code. If you're still having issues, consult the debugging section, or check your code with my final code ((If both of our codes are the same, you have an issue with how you're compiling your code)). Before you go, if you want to learn more and maybe look into how you could improve this code or learn more, read along into the notes section.
 
 ### Final Code
 ```arm
@@ -211,5 +214,5 @@ Issues with your code? No problem. Here's a list of things you can do.
 > "I can't setup VirtualBox!"
 
  - Follow [this tutorial](https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview) from the official ubuntu website.
-### Thanks for Reading. Happy Hacking! <3``
+### Thanks for Reading. Happy Hacking! <3
 
