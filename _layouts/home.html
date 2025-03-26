@@ -43,32 +43,28 @@
     </div>
 </header>
 <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <div class="home">
-<h2 class="post-list-heading"><b>(=;ェ;=) ~~ Posts ~~ ~(=^‥^)/</b></h2>
-    <!-- <ul class="post-list"><li><span class="post-meta">Mar 25, 2025</span>
-        <h3>
-          <a class="post-link" href="/datamosh/update/2025/03/25/welcome-to-datamosh.html">
-            Welcome to Datamosh!
-          </a>
-        </h3></li></ul> -->
-    <div class="post-grid">
-        {% for post in site.posts %}
-        <a class="post-grid-child" href="{{ post.url }}">
-            <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-            <h3>
-                {{ post.title }}
-            </h3>
-        </a>
-        {% endfor %}
-        <!-- <a class="post-grid-child"  href="/datamosh/update/2025/03/25/welcome-to-datamosh.html">
-            <span class="post-meta">Mar 25, 2025</span>
-            <h3>
-                Welcome to Datamosh!
-            </h3>
-        </a> -->
+    <div class="wrapper-main">
+        <canvas id="canvas" class="left-content"></canvas>
+        <div class="page-content">
+            <div class="content">
+                <h2 class="post-list-heading"><b>(=;ェ;=) ~~ Posts ~~ ~(=^‥^)/</b></h2>
+                <div class="post-grid">
+                    {% for post in site.posts %}
+                    <a class="post-grid-child" href="{{ post.url }}">
+                        <span class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
+                        <h3>
+                            {{ post.title }}
+                        </h3>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <canvas id="canvas" class="right-content"></canvas>
     </div>
-    </main><footer class="site-footer h-card">
+</main>
+
+<footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
 
   <div class="wrapper">
@@ -92,6 +88,7 @@
   </div>
 
 </footer>
+<script src="{{ site.url }}/js/matrix.js"></script>
 </body>
 
 </html>
