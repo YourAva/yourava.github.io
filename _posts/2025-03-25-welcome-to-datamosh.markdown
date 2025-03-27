@@ -3,6 +3,7 @@ layout: post
 title:  "Welcome to Datamosh!"
 date:   2025-03-25 19:47:40 +0000
 categories: datamosh update
+cover: /public/2025-03-25-welcome-to-datamosh/welcome-to-datamosh.png
 ---
 Welcome to **Datamosh**. This is a blog made by [Yours truly][bsky-link], AvaLikesBread. I'll be posting a lot of thought out documentation for my projects here, hoping to educate people with clear and concise tutorials based primarily around hacking!
 

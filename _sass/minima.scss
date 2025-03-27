@@ -830,7 +830,22 @@ box-shadow: 0px 0px 35px 2px rgba(238,46,255,0.9);
     border-color: var(--background-color);
     border-color: #0e0e0e;
     border-style: solid;
+    height: 300px;
+    // overflow: hidden;
     padding: 10px;
+}
+
+.post-grid-child-img {
+    transition: 1s;
+    margin: auto;
+    width: 150px;
+    display: flex;
+    bottom: 0;
+}
+
+.post-grid-child:hover .post-grid-child-img {
+    transition: 1s;
+    scale: 110%;
 }
 
 .post-link {

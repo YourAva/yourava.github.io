@@ -1,0 +1,58 @@
+---
+layout: post
+title:  "101 Of Win32"
+date:   2025-03-27 17:57:12 +0000
+categories: datamosh maldev
+cover: /public/2025-03-27-101-of-win32/101-of-win32-cover.png
+---
+Heya, welcome to the **101 of Win32**. This article will go over a few important concepts about the Win32 API with spesification into how it's applied in malware development.
+* What is an API?
+* What is the Win32 API?
+* Why does the Win32 API exist?
+* What can the Win32 API do?
+* How does Win32 apply to malware development?
+
+## What is an API?
+
+Firstly, you may have heard the word "[API][API]" thrown around a lot, well, it's an "Application programming interface" which tells you absolutely nothing, whoever thought of the naming convention for this *very* important piece of infrastructure should probably stay away from naming things. So, an API is actually a way for an end user to interact with the backend of a program. Think of it this way, you're at a restaurant sitting at a table, you look at the menu and decide what you want when your waiter comes up to you; they ask you what you want to eat and you tell them you want dino nuggets (because you're VERY sophistocated.). So, the waiter makes their way to the kitchen and returns with your Dino nuggies. An API is actually very similar to the waiter in this situation, an API takes instructions from the user and carries out some processes before returning some data.
+
+*tl;dr, an API transports data between two systems, simple as!*
+
+## What is the Win32 API?
+
+The [Win32 API][win32-api] is a titular part of the windows operating system. In the terms of our restaurant scenario, if we removed the Win32 API it'd be like taking away our menu and waiter; making you remember the whole menu, go to the kitchen yourself, telling the chef what you want, then taking the plate of food from the kitchen to your table, It's a lot more effort than just saying what you want- especially if we translate that back into the application of a program where we need to do this multiple times just to do some simple processes. With that in mind, this is why the Win32 api exists. It makes the development process much more streamlined and easier for everyone involved.
+
+## What can the Win32 API do?
+
+So, what does the Win32 API actually do with the operating system? It turns out... a whole lot! Basically everything you ever do through your Windows operating system is likely to go through the Win32 API (There's not 100% chance a program will use it, but it's pretty high). Just to exacerbate my point, I'll list some features of the Win32 API: Graphics & Gaming, Audio and Video, Data access and storage, Devices, Networking and internet, Security and identity, etc... The list really does go on for a long while. If you'd like to take a closer look, or see the whole list, make sure to check out the [Win32 API documentation][win32-api-documentation].
+
+## Why does the Win32 API exist?
+
+Ease of life isn't the only reason for the existance of the Win32 API. Windows is broken up into 4 permission rings. Ring 0 being known as the "Kernel" ring (Most privileged), and ring 3 being known as the "Application" ring (Least privileged). [*Rings can't interact with rings that have a lower number than them directly.*] So, now we need to go over this "Kernel" ring. The kernel is sort of like the true brain of an operating system. Every process will **ALWAYS** lead to here at some point. The kernel directly tells the hardware (CPU, RAM) how to act and how to interact with each other, which is why it's *VERY* important we don't let users interact with it. If users could directly interact with the Kernel they could cause serious damage to their physichal hardware and destroy it, which is exactly why user rings exist; we can stick the user in the least privileged ring so they **can't directly interact with the kernel** and do damage.
+
+*Note that I say '4 rings' and then only specify ring 0-3 as in computing we start counting from 0.*
+
+![Windows User Rings]({{site.url}}/public/2025-03-27-101-of-win32/UserRings.drawio.png)
+
+This raises a new question.. It makes no sense to say all processes happen through the kernel, and then say the kernel can't be interacted with by the user. How are processes meant to happen if we can't interact with the Kernel!? This is where the Win32 API comes in to save the day! I said spesifically the user can't **directly** interact with the kernel, however, if we were to make a large list of predefined scenarios as to how we interact with it, that wouldn't be an issue, because we'd be able to control how the user space is interacting with the kernel... Oh! And would you look at that. That's exactly what Win32 API is! A bunch of predefined scenarios that we can call in the application ring to interact with Kernel mode. Below is a flowchart as to the process the Win32 API takes when it gets a request from the user to get to Ring 0. You can ignore the "NtDll.dll" for now, it will be covered in future blog posts.
+
+![Win32 API's Data Flow to Kernel Space]({{site.url}}/public/2025-03-27-101-of-win32/Win32ApiDataFlow.drawio.png)
+
+## How does Win32 apply to maldev?
+
+Now, how does the Win32 API apply to malware development? If it hasn't been made clear yet **pretty much anything you ever want to do on a computer can be done through the Win32 API**, this means that we're going to want to interact with it when we're writing malware so we can do some practices such as loading our own applications into the memory of the operating system, it's really that simple..! However, Microsoft obviously predicted malicious code could interact with this API to mess with the operating system maliciously, so, it's very likely that if you try to do anything malicious using the Win32 API your program will be flagged by windows antivirus and won't run. When it comes to combatting antivirus' we want to make our program is as low level as possible, and obviously, using this high level API isn't going to help with that. There are ways to go lower level, however we'll ignore those for now, as this blog post is spesifically about the Win32 API.
+
+## Final words
+
+As always, if anything is unclear to you or you catch an error, feel free to shoot me a message on any of my socials.
+    - [Bluesky][bsky-link]
+    - Discord: avalikesbread_
+
+My next blog post will be going over our first Malware using the Win32 API, where we'll inject into the live memory of a program. See you next time!
+
+[bsky-link]: https://bsky.app/profile/avalikesbread.bsky.social
+[tiktok-link]: https://www.tiktok.com/@avalikesbread
+
+[win32-api-documentation]: https://learn.microsoft.com/en-us/windows/win32/api/
+[API]: https://en.wikipedia.org/wiki/API
+[win32-api]: https://learn.microsoft.com/en-us/windows/win32/api/
