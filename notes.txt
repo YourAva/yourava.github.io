@@ -1,2 +1,0 @@
-**101 Of Win32**
-    - Reference to NTDLL blog post, create hyperlink when written.
